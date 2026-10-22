@@ -24,16 +24,21 @@ function run() {
   assert.strictEqual(UrlUtils.isUrl('news articles today'), false, 'Query phrase');
   console.log('  ✓ URL vs search query classification accurate');
 
-  // Test 3: Normalization
-  assert.strictEqual(UrlUtils.normalizeInput('example.com'), 'https://example.com');
-  assert.strictEqual(UrlUtils.normalizeInput('https://google.com'), 'https://google.com');
-  assert.strictEqual(UrlUtils.normalizeInput('javascript:alert(1)'), '', 'Unsafe normalized to empty');
-  assert.ok(UrlUtils.normalizeInput('latest movies', 'duckduckgo').indexOf('duckduckgo.com/?q=latest%20movies') !== -1);
-  assert.strictEqual(UrlUtils.normalizeInput('   '), '', 'Whitespace does not open an empty search');
-  assert.strictEqual(UrlUtils.normalizeInput('example.com?q=tv#results'), 'https://example.com?q=tv#results');
-  assert.strictEqual(UrlUtils.normalizeInput('https://'), '', 'Malformed web address is rejected');
-  assert.strictEqual(UrlUtils.normalizeInput('youtube', 'google'), 'https://www.google.com/search?q=youtube');
-  console.log('  ✓ Normalization and search engine query construction verified');
+  // Test 3: Normalization (STEP 4 Requirements)
+  assert.strictEqual(UrlUtils.normalizeInput('google.com'), 'https://google.com', 'google.com -> https://google.com');
+  assert.strictEqual(UrlUtils.normalizeInput('https://github.com'), 'https://github.com', 'https://github.com preserves exact URL');
+  assert.strictEqual(UrlUtils.normalizeInput('wikipedia.org'), 'https://wikipedia.org', 'wikipedia.org -> https://wikipedia.org');
+  assert.strictEqual(UrlUtils.normalizeInput('best laptops'), 'https://www.google.com/search?q=best%20laptops', 'best laptops -> search query');
+  assert.strictEqual(UrlUtils.normalizeInput('python fastapi tutorial'), 'https://www.google.com/search?q=python%20fastapi%20tutorial', 'python fastapi tutorial -> search query');
+  assert.strictEqual(UrlUtils.normalizeInput('192.168.1.1'), 'http://192.168.1.1', '192.168.1.1 -> http://192.168.1.1');
+  assert.strictEqual(UrlUtils.normalizeInput('localhost:8000'), 'http://localhost:8000', 'localhost:8000 -> http://localhost:8000');
+  assert.strictEqual(UrlUtils.normalizeInput('example.com/path?q=1'), 'https://example.com/path?q=1', 'example.com/path?q=1 preserves path and query');
+  assert.strictEqual(UrlUtils.normalizeInput('javascript:alert(1)'), '', 'Unsafe scheme blocked');
+  assert.strictEqual(UrlUtils.normalizeInput('   '), '', 'Whitespace input returns empty');
+  assert.strictEqual(UrlUtils.normalizeInput('https://'), '', 'Malformed URL scheme returns empty');
+  assert.strictEqual(UrlUtils.normalizeInput('best laptops', 'duckduckgo'), 'https://duckduckgo.com/?q=best%20laptops', 'DuckDuckGo search query');
+  assert.strictEqual(UrlUtils.normalizeInput('best laptops', 'bing'), 'https://www.bing.com/search?q=best%20laptops', 'Bing search query');
+  console.log('  ✓ Step 4 normalization requirements (all 8 cases + search engines) verified');
 
   // Test 4: Host extraction
   assert.strictEqual(UrlUtils.extractHost('https://sub.domain.org/path?q=1#hash'), 'sub.domain.org');

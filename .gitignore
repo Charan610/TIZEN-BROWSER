@@ -8,6 +8,9 @@ Release/
 *.wgt
 !dist/TVBrowser.wgt
 *.tpk
+!dist/TVBrowser-tizen6.tpk
+__pycache__/
+*.pyc
 
 # Tizen Certificate & Profile Materials (Never commit private keys)
 *.p12

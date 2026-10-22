@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>tizen60</TargetFramework>
+    <RootNamespace>TVBrowser</RootNamespace>
+    <AssemblyName>TVBrowser</AssemblyName>
+    <DebugType>portable</DebugType>
+    <LangVersion>8.0</LangVersion>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="src/**/*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="res/libprivileged-service-client.so">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="res/libovprobe.so">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <TizenTpkUserIncludeFiles Include="res/libprivileged-service-client.so">
+      <TizenTpkSubDir>res</TizenTpkSubDir>
+    </TizenTpkUserIncludeFiles>
+    <TizenTpkUserIncludeFiles Include="res/libovprobe.so">
+      <TizenTpkSubDir>res</TizenTpkSubDir>
+    </TizenTpkUserIncludeFiles>
+    <TizenTpkUserIncludeFiles Include="res/libovprobe.so">
+      <TizenTpkSubDir>lib</TizenTpkSubDir>
+    </TizenTpkUserIncludeFiles>
+    <TizenTpkUserIncludeFiles Include="res/web/**/*">
+      <TizenTpkSubDir>res/web</TizenTpkSubDir>
+    </TizenTpkUserIncludeFiles>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Tizen.NET.Sdk" Version="1.1.9" />
+    <PackageReference Include="Tizen.NET" Version="6.0.0.14995" />
+  </ItemGroup>
+</Project>

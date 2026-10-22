@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://tizen.org/ns/packages" api-version="6.0" package="org.antigravity.tvbrowser" version="1.0.4">
+  <profile name="tv" />
+  <ui-application appid="org.antigravity.tvbrowser"
+                  exec="TVBrowser.dll"
+                  type="dotnet"
+                  multiple="false"
+                  taskmanage="true"
+                  nodisplay="false"
+                  launch_mode="single"
+                  api-version="6.0">
+    <label>TV Browser</label>
+    <icon>TVBrowser.png</icon>
+    <splash-screens />
+  </ui-application>
+  <privileges>
+    <privilege>http://tizen.org/privilege/internet</privilege>
+    <privilege>http://tizen.org/privilege/network.get</privilege>
+    <privilege>http://tizen.org/privilege/tv.inputdevice</privilege>
+  </privileges>
+</manifest>

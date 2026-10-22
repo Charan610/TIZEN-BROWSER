@@ -57,13 +57,13 @@
         return false;
       }
 
-      // IP Address format: e.g. 192.168.1.1:8080 with optional path/query/fragment
+      // IP Address format: e.g. 192.168.1.1 or 192.168.1.1:8080 with optional path/query/fragment
       if (/^(\d{1,3}\.){3}\d{1,3}(:\d+)?([/?#].*)?$/.test(trimmed)) {
         return true;
       }
 
-      // Domain pattern (e.g. example.com, bbc.co.uk) with optional port and path/query/fragment
-      if (/^([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}(:\d+)?([/?#].*)?$/i.test(trimmed)) {
+      // Domain pattern (e.g. example.com, bbc.co.uk, xn--...) with optional port and path/query/fragment
+      if (/^([a-z0-9\u00a1-\uffff]([a-z0-9\u00a1-\uffff-]*[a-z0-9\u00a1-\uffff])?\.)+[a-z\u00a1-\uffff]{2,}(:\d+)?([/?#].*)?$/i.test(trimmed)) {
         return true;
       }
 
@@ -76,10 +76,21 @@
     },
 
     /**
+     * Check if a target string is a local network address or localhost
+     * @param {string} target
+     * @returns {boolean}
+     */
+    isLocalOrIp: function(target) {
+      if (!target) return false;
+      var clean = target.replace(/^https?:\/\//i, '').trim();
+      return /^((\d{1,3}\.){3}\d{1,3}|localhost)(:\d+)?([/?#].*)?$/i.test(clean);
+    },
+
+    /**
      * Normalize user input into a navigable URL
      * If user typed a search term, wraps with active search engine URL
      * @param {string} input
-     * @param {string} [searchEngineKey='duckduckgo']
+     * @param {string} [searchEngineKey] Optional search engine key (defaults to google or schema default)
      * @returns {string} Safe navigable URL
      */
     normalizeInput: function(input, searchEngineKey) {
@@ -92,7 +103,7 @@
         return '';
       }
 
-      // Explicit scheme check: reject if malformed
+      // Explicit scheme check: validate and return if sound
       if (/^https?:\/\//i.test(trimmed)) {
         if (!this.isUrl(trimmed)) {
           return '';
@@ -101,13 +112,17 @@
       }
 
       if (this.isUrl(trimmed)) {
+        // Local IPs and localhost default to http:// scheme
+        if (this.isLocalOrIp(trimmed)) {
+          return 'http://' + trimmed;
+        }
         return 'https://' + trimmed;
       }
 
-      // Search engine fallback
-      var engineKey = searchEngineKey || 'duckduckgo';
+      // Search query fallback: construct search URL
+      var engineKey = searchEngineKey || 'google';
       var engines = SettingsSchema ? SettingsSchema.SEARCH_ENGINES : {};
-      var engine = engines[engineKey] || engines.duckduckgo || { searchUrl: 'https://duckduckgo.com/?q=' };
+      var engine = engines[engineKey] || engines.google || engines.duckduckgo || { searchUrl: 'https://www.google.com/search?q=' };
 
       return engine.searchUrl + encodeURIComponent(trimmed);
     },

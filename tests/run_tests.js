@@ -14,8 +14,16 @@ try {
   console.log('\n2. Platform Feasibility POC Test:');
   execSync('node tests/compatibility/poc_runner.js', { stdio: 'inherit' });
 
-  console.log('\nALL TESTS EXECUTED AND PASSED.');
+  console.log('\n3. Real Website & In-App Navigation Test Suite (Step 9):');
+  execSync('node tests/test_real_websites.js', { stdio: 'inherit' });
+
+  console.log('\n4. Package Artifacts Verification (WGT & TPK):');
+  execSync('python3 -m unittest tests/packaging/test_wgt.py tests/packaging/test_tpk.py', { stdio: 'inherit' });
+
+  console.log('\n=============================================');
+  console.log('ALL VERIFICATION SUITES EXECUTED AND PASSED.');
+  console.log('=============================================');
 } catch (e) {
-  console.error('Test run failed:', e.message);
+  console.error('\nTest run failed:', e.message);
   process.exit(1);
 }

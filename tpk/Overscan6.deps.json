@@ -1,0 +1,24 @@
+{
+  "runtimeTarget": {
+    "name": "Tizen,Version=v6.0/",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    "Tizen,Version=v6.0": {},
+    "Tizen,Version=v6.0/": {
+      "Overscan/1.0.0": {
+        "runtime": {
+          "Overscan.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Overscan/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

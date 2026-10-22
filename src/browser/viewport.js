@@ -99,16 +99,26 @@
         }
       }
 
+      // Layer 2: Native Tizen.WebView Host Integration
+      if (global.NativeBridge && global.NativeBridge.isAvailable()) {
+        console.log('[Viewport] Routing navigation via NativeBridge to Tizen.WebView host:', url);
+        if (this.onStateChange) {
+          this.onStateChange({ type: 'LOADING', url: url });
+        }
+        global.NativeBridge.navigate(url);
+        return;
+      }
+
       if (mode === 'READER') {
         this.loadReaderView(url);
-      } else if (mode === 'EMBED' || !/^https?:\/\//i.test(url)) {
-        this.loadEmbedView(url);
       } else {
-        this.loadBrowserView(url);
+        // In webview/iframe environment, render in-app directly
+        this.loadEmbedView(url);
       }
     },
 
     loadBrowserView: function(url) {
+      // Retained as manual fallback action, NEVER invoked automatically
       var self = this;
       this.hideAllSurfaces();
       this.currentMode = 'BROWSER';
@@ -117,33 +127,20 @@
       this.readerEl.classList.remove('hidden');
       this.readerEl.innerHTML =
         '<article class="error-card">' +
-          '<h2 class="error-title">Samsung Internet</h2>' +
-          '<p id="browser-launch-status" role="status" aria-live="polite">Opening your page in the TV browser...</p>' +
+          '<h2 class="error-title">External Browser</h2>' +
+          '<p id="browser-launch-status" role="status" aria-live="polite">Open in external browser?</p>' +
           '<div class="error-url">' + this.escapeHtml(url) + '</div>' +
-          '<p>Browse with Samsung Internet\'s keyboard, Back button, and tabs. Reopen TV Browser from Apps to return here.</p>' +
           '<div class="error-actions">' +
-            '<button type="button" class="btn btn-primary" id="browser-launch-retry">Open in Samsung Internet</button>' +
-            '<button type="button" class="btn btn-secondary" id="browser-launch-embed">Embedded view (limited)</button>' +
+            '<button type="button" class="btn btn-primary" id="browser-launch-embed">Browse In-App</button>' +
             '<button type="button" class="btn btn-secondary" id="browser-launch-home">Home</button>' +
           '</div>' +
         '</article>';
-      var retry = document.getElementById('browser-launch-retry');
-      retry.addEventListener('click', function() { self.loadUrl(url); });
-      document.getElementById('browser-launch-embed').addEventListener('click', function() {
-        self.loadUrl(url, 'EMBED');
-      });
+      var btnEmbed = document.getElementById('browser-launch-embed');
+      btnEmbed.addEventListener('click', function() { self.loadUrl(url, 'EMBED'); });
       document.getElementById('browser-launch-home').addEventListener('click', function() {
         if (self.onStateChange) self.onStateChange({ type: 'NAVIGATE_HOME' });
       });
-      if (global.SpatialNav) global.SpatialNav.initFocus(retry);
-      if (this.onStateChange) this.onStateChange({ type: 'LOADING', url: url });
-      global.SystemBrowser.open(url, function(error) {
-        if (navigationId !== self.navigationId || self.currentMode !== 'BROWSER') return;
-        var status = document.getElementById('browser-launch-status');
-        status.textContent = error ? error.message : 'Opened in Samsung Internet. Use its controls to browse the web.';
-        status.classList.toggle('launch-error', !!error);
-        if (self.onStateChange) self.onStateChange({ type: error ? 'ERROR' : 'LOADED', url: url });
-      });
+      if (global.SpatialNav) global.SpatialNav.initFocus(btnEmbed);
     },
 
     loadEmbedView: function(url) {
