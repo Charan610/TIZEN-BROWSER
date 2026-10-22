@@ -1,0 +1,76 @@
+{
+  "timestamp": "2026-10-22T04:36:49.440Z",
+  "platform": "Tizen 6.5 / Chromium M85 Web App (.wgt)",
+  "domainEmbeddingTests": [
+    {
+      "url": "https://www.google.com",
+      "statusCode": 200,
+      "xFrameOptions": "SAMEORIGIN",
+      "cspFrameAncestors": "None",
+      "iframeEmbeddable": false,
+      "reason": "X-Frame-Options: SAMEORIGIN"
+    },
+    {
+      "url": "https://www.youtube.com",
+      "statusCode": 200,
+      "xFrameOptions": "SAMEORIGIN",
+      "cspFrameAncestors": "None",
+      "iframeEmbeddable": false,
+      "reason": "X-Frame-Options: SAMEORIGIN"
+    },
+    {
+      "url": "https://www.wikipedia.org",
+      "statusCode": 200,
+      "xFrameOptions": "NONE",
+      "cspFrameAncestors": "None",
+      "iframeEmbeddable": true,
+      "reason": "ALLOWED"
+    },
+    {
+      "url": "https://github.com",
+      "statusCode": 200,
+      "xFrameOptions": "deny",
+      "cspFrameAncestors": "Present",
+      "iframeEmbeddable": false,
+      "reason": "X-Frame-Options: deny"
+    },
+    {
+      "url": "https://news.ycombinator.com",
+      "statusCode": 405,
+      "xFrameOptions": "NONE",
+      "cspFrameAncestors": "None",
+      "iframeEmbeddable": true,
+      "reason": "ALLOWED"
+    },
+    {
+      "url": "https://example.com",
+      "statusCode": 200,
+      "xFrameOptions": "NONE",
+      "cspFrameAncestors": "None",
+      "iframeEmbeddable": true,
+      "reason": "ALLOWED"
+    }
+  ],
+  "securityIsolationMatrix": {
+    "sameOriginControlledPage": {
+      "canAccessDOM": true,
+      "canInjectCSS": true,
+      "canSimulateClicks": true,
+      "canInterceptPopups": true
+    },
+    "crossOriginWebsites": {
+      "canAccessDOM": false,
+      "reason": "Blocked by browser Same-Origin Policy (SecurityError: Blocked cross-origin frame access)",
+      "canInjectCSSDirectly": false,
+      "canSimulateClicksDirectly": false,
+      "canInterceptNetworkRequests": false,
+      "reasonNetwork": "No webRequest API in Tizen Web Application runtime for child iframes",
+      "sandboxPopupMitigation": "Iframe sandbox=\"allow-scripts allow-forms allow-same-origin\" blocks unauthorized window.open"
+    }
+  },
+  "architecturalDecision": {
+    "primaryPackaging": "Official Tizen Web Application (.wgt)",
+    "viewportStrategy": "Tri-Mode Engine (Direct Embed for compatible pages, Reader Mode for news/articles, Local Verification Suite)",
+    "adblockStrategy": "5-Layer Filter: Navigation Guard, Strict Sandboxing, Cosmetic CSS on local/reader views, Popup Neutralizer, Site Allowlist"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "tv-browser",
+  "version": "1.0.0",
+  "description": "Premium Web Browser for Samsung 2022 Smart TVs (Tizen 6.5 / Chromium M85)",
+  "main": "index.html",
+  "scripts": {
+    "test": "node tests/run_tests.js",
+    "test:unit": "node tests/unit/run_unit_tests.js",
+    "test:poc": "node tests/compatibility/poc_runner.js",
+    "build": "bash scripts/build.sh",
+    "package": "bash scripts/package.sh",
+    "lint": "node scripts/lint_m85.js"
+  },
+  "keywords": [
+    "tizen",
+    "samsung-tv",
+    "smart-tv",
+    "browser",
+    "chromium-m85",
+    "adblock"
+  ],
+  "author": "TV Browser Team",
+  "license": "MIT"
+}

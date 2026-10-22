@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=1920, height=1080, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>TV Browser</title>
+  <link rel="stylesheet" href="src/ui/styles.css" />
+</head>
+<body>
+  <div id="app-root">
+    <!-- Header Toolbar -->
+    <header id="app-toolbar" class="app-toolbar">
+      <div class="toolbar-group">
+        <button type="button" class="toolbar-btn" id="btn-nav-back" title="Back (Remote Back)" disabled>
+          <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        </button>
+        <button type="button" class="toolbar-btn" id="btn-nav-forward" title="Forward" disabled>
+          <svg viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+        </button>
+        <button type="button" class="toolbar-btn" id="btn-nav-reload" title="Reload">
+          <svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+        </button>
+        <button type="button" class="toolbar-btn" id="btn-nav-home" title="Home Screen (Yellow Button)">
+          <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        </button>
+      </div>
+
+      <!-- Omnibox -->
+      <div class="address-bar-container">
+        <input type="text" id="toolbar-address-input" class="address-bar-input" placeholder="Enter URL or search query..." autocomplete="off" />
+        <div class="address-bar-security" title="Secure Navigation Active">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="toolbar-group">
+        <button type="button" class="toolbar-btn" id="btn-nav-bookmark" title="Bookmark This Page">
+          <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+        </button>
+        <button type="button" class="toolbar-btn" id="btn-nav-reader" title="Reader / Clean View">
+          <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+        </button>
+        <button type="button" class="toolbar-btn" id="btn-nav-pointer" title="Pointer Mode (Green Button)">
+          <svg viewBox="0 0 24 24"><path d="M4 2l16 12-7.5.5L18 22l-4 1.5-5.5-8L4 18V2z"/></svg>
+        </button>
+        <button type="button" class="toolbar-btn badge-btn" id="btn-nav-tabs" title="Tabs Switcher">
+          <svg viewBox="0 0 24 24"><path d="M3 3v18h18V3H3zm16 16H5V5h14v14z"/></svg>
+          <span class="badge-counter" id="tab-counter-badge">1</span>
+        </button>
+        <button type="button" class="toolbar-btn" id="btn-nav-settings" title="Settings">
+          <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Start Page Surface -->
+    <main id="start-page-container" class="start-page"></main>
+
+    <!-- Web Viewport Surface -->
+    <div id="viewport-container"></div>
+  </div>
+
+  <!-- Component Scripts -->
+  <script src="src/storage/storage_service.js"></script>
+  <script src="src/settings/settings_schema.js"></script>
+  <script src="src/settings/settings_manager.js"></script>
+  <script src="src/security/security_guard.js"></script>
+  <script src="src/browser/url_utils.js"></script>
+  <script src="src/browser/navigation_state.js"></script>
+  <script src="src/browser/reader_mode.js"></script>
+  <script src="src/input/remote_keys.js"></script>
+  <script src="src/navigation/spatial_nav.js"></script>
+  <script src="src/input/pointer_mode.js"></script>
+  <script src="src/input/tv_keyboard.js"></script>
+  <script src="src/adblock/cosmetic_rules.js"></script>
+  <script src="src/adblock/popup_shield.js"></script>
+  <script src="src/adblock/allowlist.js"></script>
+  <script src="src/adblock/adblock_engine.js"></script>
+  <script src="src/downloads/download_manager.js"></script>
+  <script src="src/bookmarks/bookmark_manager.js"></script>
+  <script src="src/history/history_manager.js"></script>
+  <script src="src/tabs/tab_manager.js"></script>
+  <script src="src/browser/viewport.js"></script>
+  <script src="src/performance/diagnostics_hud.js"></script>
+  <script src="src/ui/toast.js"></script>
+  <script src="src/ui/modal.js"></script>
+  <script src="src/ui/toolbar.js"></script>
+  <script src="src/ui/start_page.js"></script>
+  <script src="src/app/lifecycle.js"></script>
+  <script src="src/app/app.js"></script>
+</body>
+</html>

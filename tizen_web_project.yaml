@@ -1,0 +1,103 @@
+# Project type [web_app, test_runner]
+project_type: web_app
+
+# Default profile, Tizen API version
+profile: tv-samsung
+api_version: "6.5"
+
+# Build type [Debug/ Release/ Test]
+build_type: Debug
+
+# Output name for application
+output_name: TVBrowser
+
+# Output path for build
+output_path: ""
+
+# Enable size optimization of wgt for web workspace
+opt: false
+
+# Signing profile to be used for Tizen package signing
+# If value is empty: "", active signing profile will be used
+# Else If value is ".", default signing profile will be used
+signing_profile: ""
+
+# list of certs in web project (.trust-anchor)
+trust_anchor: []
+
+# list of files in web project (.html,.css etc) and resources
+files:
+  - .tizen-profile/profiles.xml
+  - assets/icons/icon.png
+  - author.p12
+  - docs/ARCHITECTURE.md
+  - docs/IMPLEMENTATION_PLAN.md
+  - docs/PLATFORM_FEASIBILITY.md
+  - index.html
+  - package.json
+  - src/adblock/adblock_engine.js
+  - src/adblock/allowlist.js
+  - src/adblock/cosmetic_rules.js
+  - src/adblock/popup_shield.js
+  - src/app/app.js
+  - src/app/lifecycle.js
+  - src/bookmarks/bookmark_manager.js
+  - src/browser/navigation_state.js
+  - src/browser/reader_mode.js
+  - src/browser/url_utils.js
+  - src/browser/viewport.js
+  - src/downloads/download_manager.js
+  - src/history/history_manager.js
+  - src/input/pointer_mode.js
+  - src/input/remote_keys.js
+  - src/input/tv_keyboard.js
+  - src/navigation/spatial_nav.js
+  - src/performance/diagnostics_hud.js
+  - src/security/security_guard.js
+  - src/settings/settings_manager.js
+  - src/settings/settings_schema.js
+  - src/storage/storage_service.js
+  - src/tabs/tab_manager.js
+  - src/ui/modal.js
+  - src/ui/start_page.js
+  - src/ui/styles.css
+  - src/ui/toast.js
+  - src/ui/toolbar.js
+  - tests/compatibility/poc_controlled_page.html
+  - tests/compatibility/poc_results.json
+  - tests/compatibility/poc_runner.js
+  - tests/run_tests.js
+  - tests/unit/run_unit_tests.js
+  - tests/unit/test_adblock.js
+  - tests/unit/test_spatial_nav.js
+  - tests/unit/test_tab_manager.js
+  - tests/unit/test_url_utils.js
+
+# list of files to exclude based on the matched patterns
+excludes:
+  - Build/*
+  - Debug/*
+  - Directory.Build.targets
+  - Release/*
+  - Test/*
+  - \.Build/.*
+  - \.buildResult/.*
+  - \.csproj
+  - \.externalToolBuilders/.*
+  - \.gn
+  - \.obj/.*
+  - \.package/.*
+  - \.project
+  - \.rds_delta
+  - \.sdk_delta.info
+  - \.settings/.*
+  - \.sign/.*
+  - \.tizen-ui-builder-tool.xml
+  - \.tproject
+  - \.wgt
+  - tizen_web_project.yaml
+  - webUnitTest/*
+
+# project dependencies
+deps: []
+

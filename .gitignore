@@ -1,0 +1,23 @@
+# Node dependencies
+node_modules/
+package-lock.json
+
+# Build and Packaging outputs
+Debug/
+Release/
+*.wgt
+!dist/TVBrowser.wgt
+*.tpk
+
+# Tizen Certificate & Profile Materials (Never commit private keys)
+*.p12
+*.pwd
+*.cer
+.tizen-profile/
+author.p12
+author.pwd
+
+# Operating System files
+.DS_Store
+Thumbs.db
+*.log

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>POC Controlled Test Page</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #18191c;
+      color: #f0f0f0;
+      padding: 20px;
+    }
+    .card {
+      background: #25262b;
+      padding: 16px;
+      margin-bottom: 16px;
+      border-radius: 8px;
+      border: 1px solid #383a42;
+    }
+    input, button {
+      padding: 10px 14px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #555;
+      background: #111;
+      color: #fff;
+      margin: 4px;
+    }
+    button:focus, input:focus {
+      outline: 3px solid #3b82f6;
+    }
+    .ad-banner {
+      background: #dc2626;
+      color: #fff;
+      padding: 15px;
+      margin: 10px 0;
+      text-align: center;
+      font-weight: bold;
+    }
+    .cookie-consent {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
+      background: #f59e0b;
+      color: #000;
+      padding: 10px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Controlled Test Page for TV Browser POC</h1>
+  <div class="card">
+    <h2>1. Form & Text Input</h2>
+    <input type="text" id="test-input" placeholder="Type here..." />
+    <button id="test-submit" onclick="document.getElementById('input-result').textContent = document.getElementById('test-input').value">Submit</button>
+    <div id="input-result" style="margin-top: 8px; color: #10b981;"></div>
+  </div>
+
+  <div class="card">
+    <h2>2. Link & Navigation</h2>
+    <a href="#section2" id="test-hash-link" style="color: #60a5fa;">Jump to Section 2</a> |
+    <a href="https://example.com" id="test-external-link" style="color: #60a5fa;">Navigate to Example.com</a>
+  </div>
+
+  <div class="card" id="section2">
+    <h2>3. Video Playback</h2>
+    <video id="test-video" width="320" height="180" controls>
+      <source src="data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAAIZnJlZQAAAAsbWRhdAAAC..." type="video/mp4">
+      Your browser does not support HTML5 video.
+    </video>
+    <div>
+      <button onclick="document.getElementById('test-video').play()">Play</button>
+      <button onclick="document.getElementById('test-video').pause()">Pause</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>4. Popup & Redirect Triggers</h2>
+    <button id="trigger-popup" onclick="window.open('https://example.com/popup', '_blank')">Trigger window.open()</button>
+    <button id="trigger-redirect" onclick="window.location.href='https://example.com/redirect'">Trigger window.location redirect</button>
+    <div id="popup-status" style="margin-top: 8px;"></div>
+  </div>
+
+  <!-- Simulated Ad Elements for Cosmetic Filter Test -->
+  <div class="ad-banner adsbygoogle" id="ad-banner-1">
+    Simulated Google Ad Banner (Should be hidden by cosmetic filter)
+  </div>
+  <div class="sponsored-content" id="ad-sponsored-1" style="background: #ef4444; padding: 10px; margin: 10px 0;">
+    Sponsored Widget (Should be hidden by cosmetic filter)
+  </div>
+
+  <!-- Simulated Cookie Banner -->
+  <div class="cookie-consent" id="cookie-banner-1">
+    Accept all cookies to continue. <button onclick="this.parentElement.remove()">Accept</button>
+  </div>
+</body>
+</html>

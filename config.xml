@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets" 
+        xmlns:tizen="http://tizen.org/ns/widgets" 
+        id="http://org.tizen/TVBrowser" 
+        version="1.0.0" 
+        viewmodes="maximized">
+    <tizen:application id="g8k2m4p9q1.TVBrowser" 
+                       exec="index.html" 
+                       screen-orientation="landscape" 
+                       required_version="6.5"/>
+    <tizen:profile name="tv-samsung"/>
+    
+    <name>TV Browser</name>
+    <description>Premium Web Browser for Samsung Smart TV (Tizen 6.5)</description>
+    <author href="https://github.com/Apps2Samsung" email="support@tvbrowser.local">TV Browser Team</author>
+    <icon src="assets/icons/icon.png"/>
+    
+    <!-- Privileges Required for Full TV Experience -->
+    <tizen:privilege name="http://tizen.org/privilege/tv.inputdevice"/>
+    <tizen:privilege name="http://tizen.org/privilege/download"/>
+    <tizen:privilege name="http://tizen.org/privilege/filesystem.read"/>
+    <tizen:privilege name="http://tizen.org/privilege/filesystem.write"/>
+    <tizen:privilege name="http://tizen.org/privilege/application.launch"/>
+    <tizen:privilege name="http://tizen.org/privilege/internet"/>
+    <tizen:privilege name="http://tizen.org/privilege/unlimitedstorage"/>
+    
+    <!-- Network Access & Navigation Permissions -->
+    <access origin="*" subdomains="true"/>
+    <tizen:allow-navigation href="*"/>
+    
+    <!-- Platform Settings -->
+    <tizen:setting screen-orientation="landscape" 
+                   context-menu="disable" 
+                   background-support="disable" 
+                   encryption="disable" 
+                   install-location="auto"/>
+    
+    <!-- TV Content Security Policy -->
+    <tizen:content-security-policy>default-src 'self' 'unsafe-inline' 'unsafe-eval' * data: blob:;</tizen:content-security-policy>
+</widget>
