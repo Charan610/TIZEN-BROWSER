@@ -24,6 +24,7 @@
     currentUrl: '',
     loadTimeoutId: null,
     onStateChange: null,
+    navigationId: 0,
 
     init: function(containerId, onStateChange) {
       this.containerEl = document.getElementById(containerId);
@@ -100,9 +101,49 @@
 
       if (mode === 'READER') {
         this.loadReaderView(url);
-      } else {
+      } else if (mode === 'EMBED' || !/^https?:\/\//i.test(url)) {
         this.loadEmbedView(url);
+      } else {
+        this.loadBrowserView(url);
       }
+    },
+
+    loadBrowserView: function(url) {
+      var self = this;
+      this.hideAllSurfaces();
+      this.currentMode = 'BROWSER';
+      var navigationId = this.navigationId;
+      if (this.iframeEl) this.iframeEl.src = 'about:blank';
+      this.readerEl.classList.remove('hidden');
+      this.readerEl.innerHTML =
+        '<article class="error-card">' +
+          '<h2 class="error-title">Samsung Internet</h2>' +
+          '<p id="browser-launch-status" role="status" aria-live="polite">Opening your page in the TV browser...</p>' +
+          '<div class="error-url">' + this.escapeHtml(url) + '</div>' +
+          '<p>Browse with Samsung Internet\'s keyboard, Back button, and tabs. Reopen TV Browser from Apps to return here.</p>' +
+          '<div class="error-actions">' +
+            '<button type="button" class="btn btn-primary" id="browser-launch-retry">Open in Samsung Internet</button>' +
+            '<button type="button" class="btn btn-secondary" id="browser-launch-embed">Embedded view (limited)</button>' +
+            '<button type="button" class="btn btn-secondary" id="browser-launch-home">Home</button>' +
+          '</div>' +
+        '</article>';
+      var retry = document.getElementById('browser-launch-retry');
+      retry.addEventListener('click', function() { self.loadUrl(url); });
+      document.getElementById('browser-launch-embed').addEventListener('click', function() {
+        self.loadUrl(url, 'EMBED');
+      });
+      document.getElementById('browser-launch-home').addEventListener('click', function() {
+        if (self.onStateChange) self.onStateChange({ type: 'NAVIGATE_HOME' });
+      });
+      if (global.SpatialNav) global.SpatialNav.initFocus(retry);
+      if (this.onStateChange) this.onStateChange({ type: 'LOADING', url: url });
+      global.SystemBrowser.open(url, function(error) {
+        if (navigationId !== self.navigationId || self.currentMode !== 'BROWSER') return;
+        var status = document.getElementById('browser-launch-status');
+        status.textContent = error ? error.message : 'Opened in Samsung Internet. Use its controls to browse the web.';
+        status.classList.toggle('launch-error', !!error);
+        if (self.onStateChange) self.onStateChange({ type: error ? 'ERROR' : 'LOADED', url: url });
+      });
     },
 
     loadEmbedView: function(url) {
@@ -160,6 +201,18 @@
             '</header>' +
             '<div class="reader-body">' + article.contentHtml + '</div>' +
           '</article>';
+
+        // Bind clicks on links in Reader View so they navigate
+        var links = self.readerEl.querySelectorAll('a[href]');
+        for (var i = 0; i < links.length; i++) {
+          links[i].addEventListener('click', function(e) {
+            e.preventDefault();
+            var targetHref = this.getAttribute('href');
+            if (targetHref) {
+              self.loadUrl(targetHref);
+            }
+          });
+        }
 
         // Inject cosmetic ad filter to ensure clean reader display
         if (AdBlockEngine) {
@@ -232,6 +285,7 @@
     },
 
     hideAllSurfaces: function() {
+      this.navigationId++;
       if (this.loadTimeoutId) {
         clearTimeout(this.loadTimeoutId);
         this.loadTimeoutId = null;

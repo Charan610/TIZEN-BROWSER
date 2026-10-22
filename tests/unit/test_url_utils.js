@@ -29,6 +29,10 @@ function run() {
   assert.strictEqual(UrlUtils.normalizeInput('https://google.com'), 'https://google.com');
   assert.strictEqual(UrlUtils.normalizeInput('javascript:alert(1)'), '', 'Unsafe normalized to empty');
   assert.ok(UrlUtils.normalizeInput('latest movies', 'duckduckgo').indexOf('duckduckgo.com/?q=latest%20movies') !== -1);
+  assert.strictEqual(UrlUtils.normalizeInput('   '), '', 'Whitespace does not open an empty search');
+  assert.strictEqual(UrlUtils.normalizeInput('example.com?q=tv#results'), 'https://example.com?q=tv#results');
+  assert.strictEqual(UrlUtils.normalizeInput('https://'), '', 'Malformed web address is rejected');
+  assert.strictEqual(UrlUtils.normalizeInput('youtube', 'google'), 'https://www.google.com/search?q=youtube');
   console.log('  ✓ Normalization and search engine query construction verified');
 
   // Test 4: Host extraction

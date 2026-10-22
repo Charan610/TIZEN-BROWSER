@@ -37,10 +37,19 @@
     isUrl: function(input) {
       if (!input) return false;
       var trimmed = input.trim();
-      
+      if (!trimmed) return false;
+
       // Explicit scheme
       if (/^https?:\/\//i.test(trimmed)) {
-        return true;
+        var withoutScheme = trimmed.replace(/^https?:\/\//i, '');
+        var host = withoutScheme.split(/[/?#]/)[0];
+        if (!host || host.length === 0) return false;
+        try {
+          var u = new URL(trimmed);
+          return !!u.hostname;
+        } catch (e) {
+          return false;
+        }
       }
 
       // Contains spaces -> search query
@@ -48,18 +57,18 @@
         return false;
       }
 
-      // IP Address format
-      if (/^(\d{1,3}\.){3}\d{1,3}(:\d+)?(\/.*)?$/.test(trimmed)) {
+      // IP Address format: e.g. 192.168.1.1:8080 with optional path/query/fragment
+      if (/^(\d{1,3}\.){3}\d{1,3}(:\d+)?([/?#].*)?$/.test(trimmed)) {
         return true;
       }
 
-      // Domain pattern (e.g. example.com, bbc.co.uk)
-      if (/^([a-z0-9-]+\.)+[a-z]{2,}(:\d+)?(\/.*)?$/i.test(trimmed)) {
+      // Domain pattern (e.g. example.com, bbc.co.uk) with optional port and path/query/fragment
+      if (/^([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}(:\d+)?([/?#].*)?$/i.test(trimmed)) {
         return true;
       }
 
-      // Localhost with optional port
-      if (/^localhost(:\d+)?(\/.*)?$/i.test(trimmed)) {
+      // Localhost with optional port and path/query/fragment
+      if (/^localhost(:\d+)?([/?#].*)?$/i.test(trimmed)) {
         return true;
       }
 
@@ -76,17 +85,23 @@
     normalizeInput: function(input, searchEngineKey) {
       if (!input) return '';
       var trimmed = input.trim();
+      if (!trimmed) return '';
 
       if (this.isUnsafeScheme(trimmed)) {
         console.warn('[UrlUtils] Blocked unsafe URL scheme:', trimmed);
         return '';
       }
 
-      if (this.isUrl(trimmed)) {
-        if (!/^https?:\/\//i.test(trimmed)) {
-          return 'https://' + trimmed;
+      // Explicit scheme check: reject if malformed
+      if (/^https?:\/\//i.test(trimmed)) {
+        if (!this.isUrl(trimmed)) {
+          return '';
         }
         return trimmed;
+      }
+
+      if (this.isUrl(trimmed)) {
+        return 'https://' + trimmed;
       }
 
       // Search engine fallback

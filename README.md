@@ -2,7 +2,7 @@
 
 ![Tizen](https://img.shields.io/badge/Platform-Tizen%206.5%20(2022)-blue)
 ![Engine](https://img.shields.io/badge/Engine-Chromium%20M85-success)
-![Package](https://img.shields.io/badge/Package-.WGT%20(Signed)-orange)
+![Package](https://img.shields.io/badge/Package-.WGT%20(Apps2Samsung)-orange)
 ![License](https://img.shields.io/badge/License-MIT-purple)
 
 **TV Browser** is a high-performance, lightweight, television-first web browser engineered specifically for **Samsung 2022 Smart TVs (Tizen 6.5 / Chromium M85)**.
@@ -18,10 +18,12 @@ Designed with an aesthetic inspired by Arc, Safari, and Brave, TV Browser delive
   - Deep charcoal aesthetic with subtle translucent surfaces and glowing focus indicators.
   - Auto-hiding header toolbar that vanishes during browsing and reappears on D-pad Up or menu trigger.
 - **🎮 Samsung Remote Control Coverage**:
-  - **Focus Mode**: Deterministic 2D Spatial Navigation using Euclidean geometric projection.
+  - **Focus Mode**: Deterministic 2D Spatial Navigation across all inputs, visible Search / Go buttons, bookmarks, dialogs, and suggestions.
+  - **Samsung TV Keyboard (IME)**: Full native support for Samsung IME Done (`65376`), Cancel (`65385`), and physical USB/Bluetooth keyboard Enter (`13`), with composition deduplication.
+  - **Typing Suggestions**: Live suggestions below active inputs combining local bookmarks/history and debounced online search suggestions without interfering with the native keyboard.
   - **Pointer Mode (🟢 Green Button)**: Hardware-accelerated virtual mouse cursor with delta-time velocity acceleration.
-  - **On-Screen TV Keyboard**: Custom D-pad driven virtual keyboard with QWERTY, numeric row, symbols, and URL shortcuts.
-  - **LIFO Back Key Priority**: Prevents accidental app termination (Dialogs → Keyboard → Fullscreen → Toolbar → History → Start Page → Exit Confirmation).
+  - **Smooth Page Scrolling**: Channel ▲ / ▼ (Page Up / Page Down) and D-pad arrow scroll fallback for reading articles and system views.
+  - **LIFO Back Key Priority**: Strict dismissal stack (Suggestions → Input Blur → Dialogs → Keyboard → In-Tab History → Start Page → Exit Confirmation).
 - **🛡️ 5-Layer Ad & Popup Defense**:
   - **Layer 1**: Navigation guard rejecting unsafe schemes (`javascript:`, `data:`) and tracking redirects.
   - **Layer 2**: Strict iframe sandboxing blocking unauthorized popups and window hijacking.
@@ -29,13 +31,14 @@ Designed with an aesthetic inspired by Arc, Safari, and Brave, TV Browser delive
   - **Layer 4**: Popup & redirect loop shield.
   - **Layer 5**: Per-site allowlist and strict mode controls.
   - *No fabricated statistics*: All metrics in the Telemetry HUD represent verified blocked events.
-- **🌐 Tri-Mode Viewport Engine**:
-  - **Direct Embed Mode**: Sandboxed frame for compatible web applications and tools.
-  - **Reader Mode**: Extracts clean article text and photography for news, blogs, and documentation, bypassing `X-Frame-Options` embedding blocks.
-  - **Local Portals**: Curated favorites and built-in POC test suite.
+- **🌐 Honest Browsing Architecture**:
+  - **Samsung Internet Launcher**: Transparently opens full web pages directly in the TV's official browser via Tizen `launchAppControl('http://tizen.org/appcontrol/operation/view', url)`, outside iframe headers (`X-Frame-Options` / CSP) and without risking firmware LSM blocks.
+  - **Direct Embed Mode (Limited)**: Sandboxed frame explicitly labeled as limited for compatible embeds and local tests.
+  - **Reader Mode**: Extracts clean article text and photography for news, blogs, and documentation, with clickable links.
+  - **Local Portals**: Curated favorites, quick search, and built-in POC test suite.
 - **⚡ Memory & Performance Engineering**:
   - **Single Active Surface**: Inactive tabs are automatically detached from the DOM to conserve TV RAM.
-  - Small idle footprint (~24 MB JS heap, ~97 KB WGT package size).
+  - Small idle footprint (~24 MB JS heap, runtime-only WGT package).
   - 60 FPS compositor-thread animations.
 - **📥 Native Tizen Download Manager**:
   - Integrated with `tizen.download` API (`DownloadRequest`) with progress tracking and persistent ledger.
@@ -132,7 +135,7 @@ tv-browser/
 │   ├── TROUBLESHOOTING.md          # Developer Mode, SDB pairing, and error recovery
 │   └── BUILD_REPORT.md             # Engineering summary & packaging logs
 └── dist/
-    └── TVBrowser.wgt               # Signed production WGT package (~97 KB)
+    └── TVBrowser.wgt               # Unsigned WGT for Apps2Samsung signing
 ```
 
 ---
@@ -141,7 +144,8 @@ tv-browser/
 
 ### 1. Prerequisites
 - macOS or Linux with **Node.js 18+** installed.
-- Samsung Tizen CLI (`tz`) and Smart Development Bridge (`sdb`).
+- Python 3 for WGT packaging.
+- Apps2Samsung for signing and installation on the TV. Tizen Studio is optional.
 
 ### 2. Run Tests & Linter
 ```bash
@@ -156,33 +160,27 @@ npm test
 ```bash
 bash scripts/package.sh
 ```
-The output package will be generated at `dist/TVBrowser.wgt`.
+The output package is `dist/TVBrowser.wgt`. The packager replaces the old archive, validates the manifest, and includes only runtime files. It does not generate certificates or include private keys. Packaging also runs the WGT regression checks (`npm run test:package`).
 
 ---
 
-## 📺 Installation on Samsung 2022 Smart TV
+## 📺 Install with Apps2Samsung (Samsung 2022 / Tizen 6.5+)
 
-### Step 1: Enable Developer Mode on TV
-1. On the TV, open **Apps**.
-2. Press **`1` `2` `3` `4` `5`** on your remote.
-3. In the Developer Mode popup, toggle to **ON**.
-4. Enter your Mac's IP address under **Host PC IP**.
-5. Press **OK** and restart the TV by holding the remote **Power** button for 5 seconds.
+1. Enable **Developer Mode** in the TV's Apps screen (press `1 2 3 4 5`). Set **Host PC IP** to the local IP of the computer or phone running Apps2Samsung, then restart the TV.
+2. Open Apps2Samsung on that device and connect to the TV on the same network.
+3. Choose **Custom WGT/TPK** (called **Custom WGT File** in some versions) and select the newly generated **`dist/TVBrowser.wgt`**.
+4. Allow Apps2Samsung to sign the app. Sign in to Samsung if requested so it can create a distributor certificate authorized for this TV's DUID.
+5. Install, then launch **TV Browser** from Apps2Samsung or the TV's Apps screen.
 
-### Step 2: Connect SDB over Network
-```bash
-# Connect to your TV's IP address (port 26101 is standard for Tizen)
-sdb connect <TV_IP>:26101
+This WGT is intentionally **unsigned**. It becomes installable after Apps2Samsung signs it for your TV. Do not install the unsigned archive directly with SDB. For a manual Tizen Studio installation, use a Samsung TV signing profile authorized for the TV and install the resulting signed WGT with `tizen install -n <signed-package.wgt> -t <device-name>`.
 
-# Verify the device is connected
-sdb devices
-```
+Version 1.0.3 fixes Samsung TV keyboard Done (`65376`) and Cancel (`65385`) handling, physical keyboard Enter (`13`), visible Search/Go buttons, live typing suggestions (local bookmarks/history + debounced DuckDuckGo search suggestions), D-pad focus indicators and arrow navigation isolation, smooth page scrolling via Channel Up/Down, transparent Samsung Internet launching via Tizen `launchAppControl`, and strict Back-key priority. The application ID remains `g8k2m4p9q1.TVBrowser`. The required version remains **Tizen 6.5** (Samsung 2022 Smart TVs).
 
-### Step 3: Install Package
-```bash
-sdb install dist/TVBrowser.wgt
-```
-The **TV Browser** app will appear in your TV's **Apps** menu, ready to launch with your Samsung remote!
+If installation fails, export **Settings → Diagnostics** in Apps2Samsung and check `docs/TROUBLESHOOTING.md`. Certificate and Developer Mode problems require installer/TV setup; changing JavaScript cannot resolve them.
+
+Installation on physical TV hardware requires Samsung certificate signing via Apps2Samsung with the TV's unique DUID. Desktop tests run against mocked Tizen APIs and node test harnesses. Because the web browser delegates real-world web browsing to Samsung Internet, websites load without iframe restrictions, while TV Browser serves as the home portal, search bar, bookmark manager, and clean reader.
+
+References: [Apps2Samsung](https://apps2samsung.com/), [Samsung manifest configuration](https://developer.samsung.com/smarttv/develop/guides/fundamentals/configuring-tv-applications.html), [Tizen manifest reference](https://docs.tizen.org/application/web/reference/config-xml/).
 
 ---
 

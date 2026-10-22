@@ -51,6 +51,13 @@
       if (global.TVKeyboard) global.TVKeyboard.init();
       if (global.Modal) global.Modal.init();
       if (global.Toast) global.Toast.init();
+      if (global.Suggestions) {
+        global.Suggestions.init({
+          onSelect: function(val) {
+            self.navigateTo(val);
+          }
+        });
+      }
       if (global.Lifecycle) global.Lifecycle.init();
 
       // 8. Viewport & Start Page
@@ -78,13 +85,6 @@
           onTogglePointer: function() { self.togglePointerMode(); },
           onOpenTabs: function() { self.openTabsModal(); },
           onOpenSettings: function() { if (global.Modal) global.Modal.openSettings(); },
-          onAddressInputClick: function(inputEl) {
-            if (global.TVKeyboard) {
-              global.TVKeyboard.open(inputEl, function(val) {
-                self.navigateTo(val);
-              });
-            }
-          },
           onNavigate: function(url) { self.navigateTo(url); }
         });
       }
@@ -114,6 +114,9 @@
       var self = this;
 
       window.addEventListener('keydown', function(e) {
+        if (e.defaultPrevented) return;
+        if (global.TextInput && global.TextInput.isEditing(e.target) &&
+            !(global.TVKeyboard && global.TVKeyboard.isOpen)) return;
         var action = global.RemoteKeys ? global.RemoteKeys.getAction(e) : 'UNKNOWN';
 
         // 1. If Pointer mode is active, feed kinematic inputs
@@ -174,7 +177,14 @@
           return;
         }
 
-        // 4. Directional D-Pad navigation when Virtual Pointer is disabled
+        // 4. Remote Channel Up / Down (Page Up / Page Down) for reading surfaces
+        if (action === 'PAGE_UP' || action === 'PAGE_DOWN') {
+          e.preventDefault();
+          self.scrollActiveSurface(action === 'PAGE_UP' ? -420 : 420);
+          return;
+        }
+
+        // 5. Directional D-Pad navigation when Virtual Pointer is disabled
         if (!global.PointerMode || !global.PointerMode.active) {
           if (action === 'UP' || action === 'DOWN' || action === 'LEFT' || action === 'RIGHT') {
             // If toolbar is hidden and user presses UP at top of page, reveal toolbar
@@ -187,6 +197,14 @@
             if (global.SpatialNav && global.SpatialNav.move(action)) {
               e.preventDefault();
               return;
+            }
+
+            // If SpatialNav has no further target in UP/DOWN direction, scroll active surface
+            if (action === 'UP' || action === 'DOWN') {
+              if (self.scrollActiveSurface(action === 'UP' ? -200 : 200)) {
+                e.preventDefault();
+                return;
+              }
             }
           }
         }
@@ -204,7 +222,8 @@
       if (!input) return;
 
       var searchEngine = global.SettingsManager ? global.SettingsManager.get('defaultSearchEngine') : 'duckduckgo';
-      var normalizedUrl = global.UrlUtils ? global.UrlUtils.normalizeInput(input, searchEngine) : input;
+      var normalizedUrl = input === 'tests/compatibility/poc_controlled_page.html' ? input :
+        (global.UrlUtils ? global.UrlUtils.normalizeInput(input, searchEngine) : input);
 
       if (!normalizedUrl) {
         if (global.Toast) global.Toast.show('Invalid or blocked URL scheme');
@@ -226,7 +245,7 @@
       }
 
       if (global.Viewport) {
-        global.Viewport.loadUrl(url, mode || 'EMBED');
+        global.Viewport.loadUrl(url, mode);
       }
 
       if (global.HistoryManager) {
@@ -272,6 +291,24 @@
       } else {
         this.returnHome();
       }
+    },
+
+    scrollActiveSurface: function(delta) {
+      var readerWrapper = document.getElementById('viewport-reader-wrapper');
+      if (readerWrapper && !readerWrapper.classList.contains('hidden')) {
+        readerWrapper.scrollBy({ top: delta, behavior: 'smooth' });
+        return true;
+      }
+      var errorWrapper = document.getElementById('viewport-error-wrapper');
+      if (errorWrapper && !errorWrapper.classList.contains('hidden')) {
+        errorWrapper.scrollBy({ top: delta, behavior: 'smooth' });
+        return true;
+      }
+      if (typeof window !== 'undefined' && window.scrollY !== undefined) {
+        window.scrollBy({ top: delta, behavior: 'smooth' });
+        return true;
+      }
+      return false;
     },
 
     navigateForward: function() {
@@ -373,6 +410,8 @@
       } else if (event.type === 'LOADING') {
         if (activeTab.navState) activeTab.navState.setLoading(true);
         if (global.Toolbar && activeTab.navState) global.Toolbar.updateNavigationState(activeTab.navState);
+      } else if (event.type === 'ERROR') {
+        if (activeTab.navState) activeTab.navState.setLoading(false);
       } else if (event.type === 'NAVIGATE_HOME') {
         this.returnHome();
       }

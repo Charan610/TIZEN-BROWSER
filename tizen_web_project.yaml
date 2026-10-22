@@ -27,9 +27,7 @@ trust_anchor: []
 
 # list of files in web project (.html,.css etc) and resources
 files:
-  - .tizen-profile/profiles.xml
   - assets/icons/icon.png
-  - author.p12
   - docs/ARCHITECTURE.md
   - docs/IMPLEMENTATION_PLAN.md
   - docs/PLATFORM_FEASIBILITY.md
@@ -75,6 +73,14 @@ files:
 
 # list of files to exclude based on the matched patterns
 excludes:
+  - "**/*.p12"
+  - "**/*.pfx"
+  - "**/*.pwd"
+  - .temp_profile_build/*
+  - .tizen-profile/*
+  - dist/*
+  - docs/*
+  - scripts/*
   - Build/*
   - Debug/*
   - Directory.Build.targets

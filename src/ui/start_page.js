@@ -35,13 +35,15 @@
 
       var html = 
         '<div class="start-header">' +
-          '<div class="brand-badge">🛡️ Shield Active • Tizen 6.5</div>' +
+          '<div class="brand-badge">Samsung TV • Internet Launcher</div>' +
           '<h1 class="start-title">TV Browser</h1>' +
         '</div>' +
 
         '<div class="start-search-box">' +
-          '<input type="text" id="start-search-input" class="start-search-input" placeholder="Search the web or enter address..." autocomplete="off" />' +
+          '<input type="text" id="start-search-input" class="start-search-input" aria-label="Search the web or enter an address" enterkeyhint="search" placeholder="Search the web or enter address..." autocomplete="off" />' +
+          '<button type="button" class="btn btn-primary start-search-go" id="start-search-go">Search / Go</button>' +
         '</div>' +
+        '<p class="start-search-help">Type, then choose Done on the TV keyboard or Search / Go. Websites open in Samsung Internet.</p>' +
 
         '<div class="tiles-section-title">FAVORITE WEBSITES</div>' +
         '<div class="tiles-grid">';
@@ -70,11 +72,15 @@
       var self = this;
       var input = document.getElementById('start-search-input');
 
-      if (input) {
-        input.addEventListener('keydown', function(e) {
-          if (e.keyCode === 13) { // Enter
-            if (self.onNavigate) self.onNavigate(input.value);
-          }
+      if (global.TextInput) {
+        global.TextInput.bind(input, document.getElementById('start-search-go'), function(value) {
+          if (self.onNavigate) self.onNavigate(value);
+        });
+      }
+
+      if (global.Suggestions && input) {
+        global.Suggestions.attach(input, function(value) {
+          if (self.onNavigate) self.onNavigate(value);
         });
       }
 

@@ -27,11 +27,13 @@
 
       <!-- Omnibox -->
       <div class="address-bar-container">
-        <input type="text" id="toolbar-address-input" class="address-bar-input" placeholder="Enter URL or search query..." autocomplete="off" />
+        <input type="text" id="toolbar-address-input" class="address-bar-input" aria-label="Web address or search" enterkeyhint="go" placeholder="Enter URL or search query..." autocomplete="off" />
         <div class="address-bar-security" title="Secure Navigation Active">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
         </div>
       </div>
+
+      <button type="button" class="btn btn-primary" id="toolbar-search-go">Go</button>
 
       <!-- Quick Actions -->
       <div class="toolbar-group">
@@ -69,6 +71,8 @@
   <script src="src/browser/url_utils.js"></script>
   <script src="src/browser/navigation_state.js"></script>
   <script src="src/browser/reader_mode.js"></script>
+  <script src="src/input/text_input.js"></script>
+  <script src="src/browser/system_browser.js"></script>
   <script src="src/input/remote_keys.js"></script>
   <script src="src/navigation/spatial_nav.js"></script>
   <script src="src/input/pointer_mode.js"></script>
@@ -85,6 +89,7 @@
   <script src="src/performance/diagnostics_hud.js"></script>
   <script src="src/ui/toast.js"></script>
   <script src="src/ui/modal.js"></script>
+  <script src="src/ui/suggestions.js"></script>
   <script src="src/ui/toolbar.js"></script>
   <script src="src/ui/start_page.js"></script>
   <script src="src/app/lifecycle.js"></script>

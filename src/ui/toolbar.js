@@ -99,19 +99,15 @@
         });
       }
 
-      if (this.addressInputEl) {
-        this.addressInputEl.addEventListener('click', function() {
-          if (self.callbacks.onAddressInputClick) {
-            self.callbacks.onAddressInputClick(self.addressInputEl);
-          }
+      if (global.TextInput) {
+        global.TextInput.bind(this.addressInputEl, document.getElementById('toolbar-search-go'), function(value) {
+          if (self.callbacks.onNavigate) self.callbacks.onNavigate(value);
         });
+      }
 
-        this.addressInputEl.addEventListener('keydown', function(e) {
-          if (e.keyCode === 13) { // Enter
-            if (self.callbacks.onNavigate) {
-              self.callbacks.onNavigate(self.addressInputEl.value);
-            }
-          }
+      if (global.Suggestions && this.addressInputEl) {
+        global.Suggestions.attach(this.addressInputEl, function(value) {
+          if (self.callbacks.onNavigate) self.callbacks.onNavigate(value);
         });
       }
     },

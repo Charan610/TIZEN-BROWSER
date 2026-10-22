@@ -73,15 +73,29 @@
         }
       }
 
-      // Priority 2: Close active modal dialog (Settings, Tabs, etc.)
-      if (Modal && Modal.isOpen()) {
-        Modal.close();
+      // Priority 2: Dismiss active typing suggestions dropdown
+      if (global.Suggestions && typeof global.Suggestions.isOpen === 'function' && global.Suggestions.isOpen()) {
+        global.Suggestions.hide();
         return true;
       }
 
-      // Priority 3: Close on-screen TV Keyboard
-      if (TVKeyboard && TVKeyboard.isOpen) {
-        TVKeyboard.close();
+      // Priority 3: Close active modal dialog (Settings, Tabs, etc.)
+      var activeModal = global.Modal || Modal;
+      if (activeModal && typeof activeModal.isOpen === 'function' && activeModal.isOpen()) {
+        activeModal.close();
+        return true;
+      }
+
+      // Priority 4: Close on-screen TV Keyboard
+      var activeKeyboard = global.TVKeyboard || TVKeyboard;
+      if (activeKeyboard && activeKeyboard.isOpen) {
+        activeKeyboard.close();
+        return true;
+      }
+
+      // Priority 5: If an input is actively focused, blur it to exit editing
+      if (global.TextInput && global.TextInput.isEditing(document.activeElement)) {
+        document.activeElement.blur();
         return true;
       }
 
@@ -126,8 +140,9 @@
     exitApp: function() {
       console.log('[Lifecycle] Exiting application...');
       try {
-        if (typeof window !== 'undefined' && window.tizen && window.tizen.application) {
-          var app = window.tizen.application.getCurrentApplication();
+        var tizenApi = (typeof window !== 'undefined' && window.tizen) || (typeof global !== 'undefined' && global.tizen);
+        if (tizenApi && tizenApi.application) {
+          var app = tizenApi.application.getCurrentApplication();
           app.exit();
         } else {
           console.log('[Lifecycle] Non-Tizen environment: close window');
@@ -144,4 +159,4 @@
   } else {
     global.Lifecycle = Lifecycle;
   }
-})(typeof window !== 'undefined' ? window : this);
+})(typeof window !== 'undefined' ? window : (typeof global !== 'undefined' ? global : this));
