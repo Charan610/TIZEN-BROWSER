@@ -62,6 +62,25 @@ class TpkTests(unittest.TestCase):
         self.assertIn('author-signature.xml', self.names)
         self.assertIn('signature1.xml', self.names)
 
+    def test_signed_digests_match(self):
+        """Ensure all signed references match their declared digests so Tizen security doesn't kill the app."""
+        import base64
+        import hashlib
+        import urllib.parse
+        manifest_xml = self.archive.read('author-signature.xml')
+        tree = ET.fromstring(manifest_xml)
+        ns = {'ds': 'http://www.w3.org/2000/09/xmldsig#'}
+        for ref in tree.findall('.//ds:Reference', ns):
+            uri = ref.get('URI')
+            if uri.startswith('#'):
+                continue
+            path = urllib.parse.unquote(uri)
+            expected = ref.find('ds:DigestValue', ns).text.strip()
+            self.assertIn(path, self.names, f"Signed file missing from package: {path}")
+            data = self.archive.read(path)
+            digest = base64.b64encode(hashlib.sha512(data).digest()).decode()
+            self.assertEqual(digest, expected, f"Signature digest mismatch on {path} (causes app crash on TV)")
+
     def test_no_private_keys_or_secret_files(self):
         for name in self.names:
             self.assertNotRegex(name.lower(), r'\.(p12|pfx|key|pem|pwd)$')

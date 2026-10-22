@@ -216,6 +216,21 @@
           global.PointerMode.handleKeyUp(action);
         }
       });
+
+      // Samsung Tizen TV hardware key event (prevents automatic OS app termination on Back)
+      window.addEventListener('tizenhwkey', function(e) {
+        if (e.keyName === 'back') {
+          e.preventDefault();
+          e.stopPropagation();
+          var context = {
+            activeTab: global.TabManager ? global.TabManager.getActiveTab() : null,
+            isStartPage: self.isStartPage,
+            onNavigateBack: function(url) { self.loadUrlInActiveTab(url); },
+            onReturnHome: function() { self.returnHome(); }
+          };
+          if (global.Lifecycle) global.Lifecycle.handleBackKey(context);
+        }
+      });
     },
 
     navigateTo: function(input) {

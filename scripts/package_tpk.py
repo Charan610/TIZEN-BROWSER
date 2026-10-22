@@ -36,7 +36,7 @@ def build():
             files.append((p, name))
 
     # Binaries and native libraries
-    for directory in ('bin', 'res', 'shared'):
+    for directory in ('bin', 'lib', 'res', 'shared'):
         dir_path = TPK_DIR / directory
         if dir_path.is_dir():
             for file in sorted(dir_path.rglob('*')):
