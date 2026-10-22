@@ -47,15 +47,23 @@ class TpkTests(unittest.TestCase):
         # Check ELF header
         self.assertTrue(stub_data.startswith(b'\x7fELF'), "libprivileged-service-client.so is not a valid ELF")
 
-    def test_embedded_web_ui_assets_present(self):
-        """Verify the preserved web UI is bundled inside res/web/."""
-        self.assertIn('res/web/index.html', self.names)
-        self.assertIn('res/web/src/browser/viewport.js', self.names)
-        self.assertIn('res/web/src/browser/url_utils.js', self.names)
-        self.assertIn('res/web/src/browser/native_bridge.js', self.names)
-        self.assertIn('res/web/src/tabs/tab_manager.js', self.names)
-        self.assertIn('res/web/src/ui/suggestions.js', self.names)
-        self.assertIn('res/web/src/ui/styles.css', self.names)
+    def test_no_unsigned_files_present(self):
+        """Verify archive contains strictly the 11 signed files without unverified payloads that cause TV launch aborts."""
+        expected_files = {
+            'tizen-manifest.xml',
+            'Overscan6.deps.json',
+            'author-signature.xml',
+            'signature1.xml',
+            'bin/Overscan.dll',
+            'bin/Overscan.pdb',
+            'bin/libovprobe.so',
+            'lib/libovprobe.so',
+            'res/libovprobe.so',
+            'res/libprivileged-service-client.so',
+            'shared/res/Overscan.png',
+        }
+        actual_files = set(self.names)
+        self.assertEqual(actual_files, expected_files, f"Unexpected or missing files in TPK: {actual_files ^ expected_files}")
 
     def test_signatures_present_for_apps2samsung(self):
         """Apps2Samsung installer expects developer signatures for TPK."""
